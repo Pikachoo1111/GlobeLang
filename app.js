@@ -1,56 +1,79 @@
-const path = require('path')
-const express = require('express')
-const WebSocket = require('ws')
-const http = require('http')
+// @ts-nocheck
 
-const app = express()
+const johnSelectorBtn = document.querySelector('#john-selector')
+const janeSelectorBtn = document.querySelector('#jane-selector')
+const chatHeader = document.querySelector('.chat-header')
+const chatMessages = document.querySelector('.chat-messages')
+const chatInputForm = document.querySelector('.chat-input-form')
+const chatInput = document.querySelector('.chat-input')
+const clearChatBtn = document.querySelector('.clear-chat-button')
 
-/* Serve static files from the root directory */
-app.use(express.static(__dirname))
+const messages = JSON.parse(localStorage.getItem('messages')) || []
 
-/* Route to serve HTML file from root directory */
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'))
-})
+const createChatMessageElement = (message) => `
+  <div class="message ${message.sender === 'John' ? 'blue-bg' : 'gray-bg'}">
+    <div class="message-sender">${message.sender}</div>
+    <div class="message-text">${message.text}</div>
+    <div class="message-timestamp">${message.timestamp}</div>
+  </div>
+`
 
-/* Route to indicate chat server is running */
-app.get('/server', (req, res) => {
-  res.send('Chat server running')
-})
-
-/* Create an HTTP server with Express app */
-const server = http.createServer(app)
-
-/* Initialize WebSocket server and bind it to the HTTP server */
-const wss = new WebSocket.Server({ server })
-
-/* Map to store chatCode and corresponding WebSocket clients */
-const chatRooms = {}
-
-/* Handle WebSocket connections */
-wss.on('connection', (ws) => {
-  /* Handle incoming messages */
-  ws.on('message', (message) => {
-    const messageObject = JSON.parse(message.toString())
-    const { type, chatCode } = messageObject
-
-    if (type === 'join') {
-      /* Create a new chat room if it doesn't exist */
-      chatRooms[chatCode] = chatRooms[chatCode] || new Set()
-      return chatRooms[chatCode].add(ws)
-    }
-
-    /* Broadcast message to clients with the same chatCode */
-    const targetClients = chatRooms[chatCode]
-    targetClients?.forEach((client) => {
-      if (client.readyState === WebSocket.OPEN) {
-        client.send(JSON.stringify(messageObject))
-      }
-    })
+window.onload = () => {
+  messages.forEach((message) => {
+    chatMessages.innerHTML += createChatMessageElement(message)
   })
-})
+}
 
-/* Start the HTTP server on port 3000 */
-server.listen(3000, () => {
-  console.log('Server started on http://localhost:3000')
+let messageSender = 'John'
+
+const updateMessageSender = (name) => {
+  messageSender = name
+  chatHeader.innerText = `${messageSender} chatting...`
+  chatInput.placeholder = `Type here, ${messageSender}...`
+
+  if (name === 'John') {
+    johnSelectorBtn.classList.add('active-person')
+    janeSelectorBtn.classList.remove('active-person')
+  }
+  if (name === 'Jane') {
+    janeSelectorBtn.classList.add('active-person')
+    johnSelectorBtn.classList.remove('active-person')
+  }
+
+  /* auto-focus the input field */
+  chatInput.focus()
+}
+
+johnSelectorBtn.onclick = () => updateMessageSender('John')
+janeSelectorBtn.onclick = () => updateMessageSender('Jane')
+
+const sendMessage = (e) => {
+  e.preventDefault()
+
+  const timestamp = new Date().toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
+  const message = {
+    sender: messageSender,
+    text: chatInput.value,
+    timestamp,
+  }
+
+  /* Save message to local storage */
+  messages.push(message)
+  localStorage.setItem('messages', JSON.stringify(messages))
+
+  /* Add message to DOM */
+  chatMessages.innerHTML += createChatMessageElement(message)
+
+  /* Clear input field */
+  chatInputForm.reset()
+
+  /*  Scroll to bottom of chat messages */
+  chatMessages.scrollTop = chatMessages.scrollHeight
+}
+
+chatInputForm.addEventListener('submit', sendMessage)
+
+clearChatBtn.addEventListener('click', () => {
+  localStorage.clear()
+  chatMessages.innerHTML = ''
 })
