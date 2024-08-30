@@ -1,4 +1,4 @@
-// server/server.js
+
 const express = require('express');
 const firebaseAdmin = require('firebase-admin');
 const axios = require('axios');
@@ -7,7 +7,7 @@ require('dotenv').config();
 const app = express();
 app.use(express.json());
 
-// Initialize Firebase
+//Firebase
 const serviceAccount = require('./path-to-your-service-account-file.json');
 firebaseAdmin.initializeApp({
   credential: firebaseAdmin.credential.cert(serviceAccount),
@@ -20,7 +20,7 @@ const db = firebaseAdmin.database();
 const RAPIDAPI_KEY = process.env.RAPIDAPI_KEY;
 const RAPIDAPI_HOST = 'bad-word-filter.p.rapidapi.com';
 
-// Filter Message
+// Filter Messages
 const filterMessage = async (message) => {
   try {
     const response = await axios.post(
@@ -41,7 +41,7 @@ const filterMessage = async (message) => {
   }
 };
 
-// Endpoint to send a message
+// send a message
 app.post('/send', async (req, res) => {
   const { userId, message, roomId } = req.body;
 
@@ -67,7 +67,7 @@ app.post('/send', async (req, res) => {
   }
 });
 
-// Endpoint to retrieve messages
+//retrieve messages
 app.get('/messages/:roomId', async (req, res) => {
   const roomId = req.params.roomId;
   try {
@@ -84,6 +84,53 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
+
+
+const roomId = 'example-room-id'; // Replace with your actual room ID
+const userId = 'example-user-id'; // Replace with your actual user ID
+const serverUrl = 'http://localhost:3000'; // Adjust to match your server URL
+
+const messagesDiv = document.getElementById('messages');
+const messageInput = document.getElementById('messageInput');
+
+const fetchMessages = async () => {
+  try {
+    const response = await fetch(`${serverUrl}/messages/${roomId}`);
+    const messages = await response.json();
+    messagesDiv.innerHTML = '';
+    for (const key in messages) {
+      const message = messages[key];
+      const div = document.createElement('div');
+      div.textContent = `${message.userId}: ${message.message}`;
+      messagesDiv.appendChild(div);
+    }
+  } catch (error) {
+    console.error('Error fetching messages:', error);
+  }
+};
+
+const sendMessage = async () => {
+  const message = messageInput.value;
+  if (!message) return;
+
+  try {
+    const response = await fetch(`${serverUrl}/send`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, message, roomId })
+    });
+    const result = await response.text();
+    alert(result);
+    messageInput.value = '';
+    fetchMessages();
+  } catch (error) {
+    console.error('Error sending message:', error);
+  }
+};
+
+fetchMessages();
+
 
 
 
