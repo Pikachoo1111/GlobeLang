@@ -1,4 +1,89 @@
-mkdir server
-cd server
-npm init -y
+// server/server.js
+const express = require('express');
+const firebaseAdmin = require('firebase-admin');
+const axios = require('axios');
+require('dotenv').config();
+
+const app = express();
+app.use(express.json());
+
+// Initialize Firebase
+const serviceAccount = require('./path-to-your-service-account-file.json');
+firebaseAdmin.initializeApp({
+  credential: firebaseAdmin.credential.cert(serviceAccount),
+  databaseURL: 'https://your-database-name.firebaseio.com'
+});
+
+const db = firebaseAdmin.database();
+
+// Bad Word Filter Configuration
+const RAPIDAPI_KEY = process.env.RAPIDAPI_KEY;
+const RAPIDAPI_HOST = 'bad-word-filter.p.rapidapi.com';
+
+// Filter Message
+const filterMessage = async (message) => {
+  try {
+    const response = await axios.post(
+      `https://${RAPIDAPI_HOST}/filter`,
+      { text: message },
+      {
+        headers: {
+          'x-rapidapi-key': RAPIDAPI_KEY,
+          'x-rapidapi-host': RAPIDAPI_HOST,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error filtering message:', error);
+    throw error;
+  }
+};
+
+// Endpoint to send a message
+app.post('/send', async (req, res) => {
+  const { userId, message, roomId } = req.body;
+
+  try {
+    // Filter message
+    const filtered = await filterMessage(message);
+    if (filtered.isFiltered) {
+      return res.status(400).send('Message contains inappropriate content.');
+    }
+
+    // Save message to Firebase
+    const messagesRef = db.ref(`rooms/${roomId}/messages`);
+    const newMessageRef = messagesRef.push();
+    await newMessageRef.set({
+      userId,
+      message: filtered.text,
+      timestamp: Date.now()
+    });
+
+    res.status(200).send('Message sent successfully.');
+  } catch (error) {
+    res.status(500).send('Error sending message.');
+  }
+});
+
+// Endpoint to retrieve messages
+app.get('/messages/:roomId', async (req, res) => {
+  const roomId = req.params.roomId;
+  try {
+    const messagesRef = db.ref(`rooms/${roomId}/messages`);
+    const snapshot = await messagesRef.once('value');
+    const messages = snapshot.val();
+    res.status(200).json(messages);
+  } catch (error) {
+    res.status(500).send('Error retrieving messages.');
+  }
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
+
+
 
