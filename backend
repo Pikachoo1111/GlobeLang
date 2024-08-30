@@ -1,1 +1,136 @@
 
+const express = require('express');
+const firebaseAdmin = require('firebase-admin');
+const axios = require('axios');
+require('dotenv').config();
+
+const app = express();
+app.use(express.json());
+
+//Firebase
+const serviceAccount = require('./path-to-your-service-account-file.json');
+firebaseAdmin.initializeApp({
+  credential: firebaseAdmin.credential.cert(serviceAccount),
+  databaseURL: 'https://your-database-name.firebaseio.com'
+});
+
+const db = firebaseAdmin.database();
+
+// Bad Word Filter Configuration
+const RAPIDAPI_KEY = process.env.RAPIDAPI_KEY;
+const RAPIDAPI_HOST = 'bad-word-filter.p.rapidapi.com';
+
+// Filter Messages
+const filterMessage = async (message) => {
+  try {
+    const response = await axios.post(
+      `https://${RAPIDAPI_HOST}/filter`,
+      { text: message },
+      {
+        headers: {
+          'x-rapidapi-key': RAPIDAPI_KEY,
+          'x-rapidapi-host': RAPIDAPI_HOST,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error filtering message:', error);
+    throw error;
+  }
+};
+
+// send a message
+app.post('/send', async (req, res) => {
+  const { userId, message, roomId } = req.body;
+
+  try {
+    // Filter message
+    const filtered = await filterMessage(message);
+    if (filtered.isFiltered) {
+      return res.status(400).send('Message contains inappropriate content.');
+    }
+
+    // Save message to Firebase
+    const messagesRef = db.ref(`rooms/${roomId}/messages`);
+    const newMessageRef = messagesRef.push();
+    await newMessageRef.set({
+      userId,
+      message: filtered.text,
+      timestamp: Date.now()
+    });
+
+    res.status(200).send('Message sent successfully.');
+  } catch (error) {
+    res.status(500).send('Error sending message.');
+  }
+});
+
+//retrieve messages
+app.get('/messages/:roomId', async (req, res) => {
+  const roomId = req.params.roomId;
+  try {
+    const messagesRef = db.ref(`rooms/${roomId}/messages`);
+    const snapshot = await messagesRef.once('value');
+    const messages = snapshot.val();
+    res.status(200).json(messages);
+  } catch (error) {
+    res.status(500).send('Error retrieving messages.');
+  }
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
+
+
+
+const roomId = 'example-room-id'; // Replace with your actual room ID
+const userId = 'example-user-id'; // Replace with your actual user ID
+const serverUrl = 'http://localhost:3000'; // Adjust to match your server URL
+
+const messagesDiv = document.getElementById('messages');
+const messageInput = document.getElementById('messageInput');
+
+const fetchMessages = async () => {
+  try {
+    const response = await fetch(`${serverUrl}/messages/${roomId}`);
+    const messages = await response.json();
+    messagesDiv.innerHTML = '';
+    for (const key in messages) {
+      const message = messages[key];
+      const div = document.createElement('div');
+      div.textContent = `${message.userId}: ${message.message}`;
+      messagesDiv.appendChild(div);
+    }
+  } catch (error) {
+    console.error('Error fetching messages:', error);
+  }
+};
+
+const sendMessage = async () => {
+  const message = messageInput.value;
+  if (!message) return;
+
+  try {
+    const response = await fetch(`${serverUrl}/send`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, message, roomId })
+    });
+    const result = await response.text();
+    alert(result);
+    messageInput.value = '';
+    fetchMessages();
+  } catch (error) {
+    console.error('Error sending message:', error);
+  }
+};
+
+fetchMessages();
+
+
+
+
