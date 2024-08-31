@@ -4,7 +4,16 @@ body {
     align-items: center;
     height: 100vh;
     background-color: #2f3136;
-    background-image: linear-gradient(to right, #f06b6b, #f0c674, #f0f0f0);
+    background-image: linear-gradient(
+        23deg,
+        hsl(49deg 100% 69%) 0%,
+        hsl(16deg 80% 61%) 2%,
+        hsl(330deg 81% 34%) 12%,
+        hsl(259deg 100% 15%) 50%,
+        hsl(212deg 100% 25%) 88%,
+        hsl(197deg 100% 30%) 98%,
+        hsl(183deg 79% 36%) 100%
+      );
     color: #dcddde;
     font-family: Arial, sans-serif;
     margin: 0;
