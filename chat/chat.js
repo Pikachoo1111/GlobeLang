@@ -106,7 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     backButton.addEventListener('click', () => {
-        window.location.href = 'home.html';
+        window.location.href = '../home/home.html';
     });
 
     setInterval(() => {

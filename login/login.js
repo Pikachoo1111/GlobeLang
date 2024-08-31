@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (user) {
             localStorage.setItem('currentUser', JSON.stringify(user));
-            window.location.href = 'home.html';
+            window.location.href = '../home/home.html';
         } else {
             errorMessage.textContent = 'Invalid username, email, or password.';
         }
