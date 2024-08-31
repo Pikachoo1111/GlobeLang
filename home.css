@@ -13,7 +13,6 @@ body {
         hsl(197deg 100% 30%) 98%,
         hsl(183deg 79% 36%) 100%
     );
-    display: flex;
 }
 
 #container {
@@ -89,3 +88,4 @@ body {
     height: 100%;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
+

@@ -23,3 +23,4 @@ document.addEventListener('DOMContentLoaded', () => {
         chatContainer.innerHTML = `<p>Loading content for ${tabId}...</p>`;
     }
 });
+

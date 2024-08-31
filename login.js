@@ -4,15 +4,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     loginForm.addEventListener('submit', (e) => {
         e.preventDefault();
-        
+
         const identifier = document.getElementById('identifier').value;
         const password = document.getElementById('password').value;
 
-        // Replace this with actual user validation logic
         if (validateUser(identifier, password)) {
             // Store user info in localStorage
             localStorage.setItem('user', JSON.stringify({ identifier }));
-            
+
             // Redirect to home screen
             window.location.href = 'home.html';
         } else {
