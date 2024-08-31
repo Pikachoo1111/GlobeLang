@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Load messages from local storage
     let messages = JSON.parse(localStorage.getItem(`messages_${roomId}`) || '[]');
 
-    // Display messages
+    // Function to display messages
     function displayMessages() {
         messagesContainer.innerHTML = '';
         messages.forEach(msg => {
@@ -32,6 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
             messageElement.textContent = `${msg.user}: ${msg.text}`;
             messagesContainer.appendChild(messageElement);
         });
+        messagesContainer.scrollTop = messagesContainer.scrollHeight; // Scroll to bottom
     }
 
     displayMessages();
@@ -48,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
             messages.push(newMessage);
             localStorage.setItem(`messages_${roomId}`, JSON.stringify(messages));
             displayMessages();
-            messageInput.value = '';
+            messageInput.value = ''; // Clear input field
         }
     });
 
@@ -72,4 +73,9 @@ document.addEventListener('DOMContentLoaded', () => {
     backButton.addEventListener('click', () => {
         window.location.href = 'home.html';
     });
+
+    // Refresh messages periodically
+    setInterval(() => {
+        displayMessages();
+    }, 1000); // Refresh every second to keep up with new messages
 });

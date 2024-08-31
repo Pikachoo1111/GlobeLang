@@ -1,3 +1,4 @@
+/* Existing styles */
 body {
     display: flex;
     justify-content: center;
@@ -25,6 +26,7 @@ body {
     padding: 10px;
     margin-bottom: 10px;
     background-color: #2f3136;
+    color: #dcddde;
 }
 
 input[type="text"] {
@@ -32,7 +34,7 @@ input[type="text"] {
     padding: 10px;
     border: 1px solid #4f545c;
     border-radius: 5px;
-    background-color: hwb(218 25% 71%) 25% 71%);
+    background-color: #40444b;
     color: #dcddde;
 }
 
