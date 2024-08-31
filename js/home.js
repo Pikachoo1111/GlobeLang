@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const createRoomForm = document.getElementById('create-room-form');
     const newRoomNameInput = document.getElementById('new-room-name');
 
-    // Load chat rooms from local storage or initialize if empty
+    // Example chat rooms (can be updated or loaded from a server)
     let chatRooms = JSON.parse(localStorage.getItem('chatRooms') || '[]');
 
     // Populate chat rooms
@@ -27,8 +27,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Handle logout
     logoutButton.addEventListener('click', () => {
-        localStorage.removeItem('currentUser'); // Clear user data
-        window.location.href = 'login.html'; // Redirect to login page
+        localStorage.removeItem('currentUser');
+        window.location.href = 'login.html';
     });
 
     // Handle create room

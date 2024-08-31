@@ -3,32 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home - GlobaLang</title>
-    <link rel="stylesheet" href="css/home.css">
+    <title>Home</title>
+    <link rel="stylesheet" href="home.css">
 </head>
 <body>
     <div id="home-container">
-        <h1>Welcome to the Chat App</h1>
-        <div id="chat-tabs">
-            <button id="logout-button">Logout</button>
-            <button id="create-room-button">Create New Room</button>
-        </div>
-        <div id="chat-rooms">
-            <h2>Available Chat Rooms</h2>
-            <ul id="room-list">
-                <!-- Chat rooms will be dynamically inserted here -->
-            </ul>
-        </div>
-        <div id="create-room-form" style="display: none;">
-            <h3>Create New Chat Room</h3>
-            <form>
-                <input type="text" id="new-room-name" placeholder="Enter room name" required />
-                <button type="submit">Create Room</button>
-            </form>
-        </div>
+        <h1>Welcome to Chat App</h1>
+        <div id="chat-rooms"></div>
+        <button id="create-room">Create New Room</button>
+        <button id="logout">Logout</button>
     </div>
-    <script src="js/home.js"></script>
+    <script src="home.js"></script>
 </body>
 </html>
-
-

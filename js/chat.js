@@ -16,9 +16,9 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    // Load chat rooms from local storage
+    // Load chat rooms and messages from local storage
     let chatRooms = JSON.parse(localStorage.getItem('chatRooms') || '[]');
-    const room = chatRooms.find(room => room.id === roomId);
+    let room = chatRooms.find(room => room.id === roomId);
 
     if (room) {
         roomNameElement.textContent = room.name;
@@ -26,7 +26,6 @@ document.addEventListener('DOMContentLoaded', () => {
         roomNameElement.textContent = 'Unknown Room';
     }
 
-    // Load messages from local storage
     let messages = JSON.parse(localStorage.getItem(`messages_${roomId}`) || '[]');
 
     // Function to display messages
@@ -62,10 +61,9 @@ document.addEventListener('DOMContentLoaded', () => {
     inviteButton.addEventListener('click', () => {
         const inviteTarget = inviteInput.value.trim();
         if (inviteTarget) {
-            // Simulate sending an invitation
             console.log(`Inviting ${inviteTarget} to room ${roomId}`);
 
-            // Update the UI
+            // Simulate sending an invitation (for demo purposes)
             const inviteMessageElement = document.createElement('div');
             inviteMessageElement.textContent = `Invitation sent to ${inviteTarget}`;
             messagesContainer.appendChild(inviteMessageElement);

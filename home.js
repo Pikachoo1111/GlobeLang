@@ -1,54 +1,45 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const roomList = document.getElementById('room-list');
-    const logoutButton = document.getElementById('logout-button');
-    const createRoomButton = document.getElementById('create-room-button');
-    const createRoomForm = document.getElementById('create-room-form');
-    const newRoomNameInput = document.getElementById('new-room-name');
+    const chatRoomsContainer = document.getElementById('chat-rooms');
+    const createRoomButton = document.getElementById('create-room');
+    const logoutButton = document.getElementById('logout');
 
-    // Example chat rooms (can be updated or loaded from a server)
+    // Retrieve current user from localStorage
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+
+    // Retrieve chat rooms from localStorage
     let chatRooms = JSON.parse(localStorage.getItem('chatRooms') || '[]');
 
-    // Populate chat rooms
-    function populateChatRooms() {
-        roomList.innerHTML = '';
+    function updateChatRooms() {
+        chatRoomsContainer.innerHTML = '';
         chatRooms.forEach(room => {
-            const listItem = document.createElement('li');
-            listItem.textContent = room.name;
-            listItem.dataset.roomId = room.id;
-            listItem.classList.add('chat-room');
-            listItem.addEventListener('click', () => {
+            const roomElement = document.createElement('div');
+            roomElement.textContent = room.name;
+            roomElement.classList.add('room');
+            roomElement.addEventListener('click', () => {
                 window.location.href = `chat.html?room=${room.id}`;
             });
-            roomList.appendChild(listItem);
+            chatRoomsContainer.appendChild(roomElement);
         });
     }
 
-    populateChatRooms();
+    createRoomButton.addEventListener('click', () => {
+        const roomName = prompt('Enter the name of the new room:');
+        if (roomName) {
+            const newRoom = {
+                id: `room_${Date.now()}`,
+                name: roomName,
+                users: [currentUser.username]
+            };
+            chatRooms.push(newRoom);
+            localStorage.setItem('chatRooms', JSON.stringify(chatRooms));
+            updateChatRooms();
+        }
+    });
 
-    // Handle logout
     logoutButton.addEventListener('click', () => {
         localStorage.removeItem('currentUser');
         window.location.href = 'login.html';
     });
 
-    // Handle create room
-    createRoomButton.addEventListener('click', () => {
-        createRoomForm.style.display = 'block';
-    });
-
-    createRoomForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const roomName = newRoomNameInput.value.trim();
-        if (roomName) {
-            const newRoom = {
-                id: `room${chatRooms.length + 1}`,
-                name: roomName
-            };
-            chatRooms.push(newRoom);
-            localStorage.setItem('chatRooms', JSON.stringify(chatRooms));
-            populateChatRooms();
-            createRoomForm.style.display = 'none';
-            newRoomNameInput.value = '';
-        }
-    });
+    updateChatRooms();
 });

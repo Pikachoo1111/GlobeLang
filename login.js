@@ -1,28 +1,24 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const loginForm = document.getElementById('login-form');
+    const form = document.getElementById('login-form');
     const errorMessage = document.getElementById('error-message');
 
-    loginForm.addEventListener('submit', (e) => {
-        e.preventDefault();
+    form.addEventListener('submit', (event) => {
+        event.preventDefault();
 
-        const identifier = document.getElementById('identifier').value;
-        const password = document.getElementById('password').value;
+        const usernameOrEmail = document.getElementById('login-username').value.trim();
+        const password = document.getElementById('login-password').value.trim();
 
-        if (validateUser(identifier, password)) {
-            // Store user info in localStorage
-            localStorage.setItem('currentUser', identifier);
-            
-            // Redirect to home page
+        // Retrieve existing users from localStorage
+        let users = JSON.parse(localStorage.getItem('users') || '[]');
+
+        // Check if the username or email and password match any existing user
+        let user = users.find(user => (user.username === usernameOrEmail || user.email === usernameOrEmail) && user.password === password);
+
+        if (user) {
+            localStorage.setItem('currentUser', JSON.stringify(user));
             window.location.href = 'home.html';
         } else {
-            errorMessage.textContent = 'Invalid username/email or password.';
+            errorMessage.textContent = 'Invalid username, email, or password.';
         }
     });
-
-    function validateUser(identifier, password) {
-        const users = JSON.parse(localStorage.getItem('users') || '[]');
-        return users.some(user => 
-            (user.username === identifier || user.email === identifier) && user.password === password
-        );
-    }
 });
