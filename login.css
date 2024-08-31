@@ -13,19 +13,19 @@ body {
         hsl(212deg 100% 25%) 88%,
         hsl(197deg 100% 30%) 98%,
         hsl(183deg 79% 36%) 100%
-      );
+    );
     color: #dcddde;
     font-family: Arial, sans-serif;
     margin: 0;
 }
 
 #login-container {
-    
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     width: 300px;
     text-align: center;
+    background-color: #36393f; /* Match the background color of inputs */
 }
 
 h2 {
