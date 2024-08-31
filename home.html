@@ -7,23 +7,17 @@
     <link rel="stylesheet" href="css/home.css">
 </head>
 <body>
-    <div id="container">
-        <aside id="sidebar">
-            <h2>Chat App</h2>
-            <ul>
-                <li><a href="#" id="tab1">Chat Room 1</a></li>
-                <li><a href="#" id="tab2">Chat Room 2</a></li>
-                <li><a href="#" id="tab3">Chat Room 3</a></li>
-                <li><a href="#" id="tab4">Chat Room 4</a></li>
-                <!-- Add more tabs as needed -->
-            </ul>
+    <div id="home-container">
+        <h1>Welcome to the Chat App</h1>
+        <div id="chat-tabs">
             <button id="logout-button">Logout</button>
-        </aside>
-        <main id="main-content">
-            <div id="chat-container">
-                <p>Select a chat room to start chatting.</p>
-            </div>
-        </main>
+        </div>
+        <div id="chat-rooms">
+            <h2>Available Chat Rooms</h2>
+            <ul id="room-list">
+                <!-- Chat rooms will be dynamically inserted here -->
+            </ul>
+        </div>
     </div>
     <script src="js/home.js"></script>
 </body>

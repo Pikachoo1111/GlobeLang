@@ -1,30 +1,30 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const currentUser = localStorage.getItem('currentUser');
-    if (!currentUser) {
-        window.location.href = 'login.html'; // Redirect to login if not logged in
-        return;
-    }
+    const roomList = document.getElementById('room-list');
+    const logoutButton = document.getElementById('logout-button');
 
-    const tabs = document.querySelectorAll('#sidebar ul li a');
-    const chatContainer = document.getElementById('chat-container');
+    // Example chat rooms (could be loaded from a server or database in a real app)
+    const chatRooms = [
+        { id: 'room1', name: 'General Chat' },
+        { id: 'room2', name: 'Tech Talk' },
+        { id: 'room3', name: 'Random' }
+    ];
 
-    tabs.forEach(tab => {
-        tab.addEventListener('click', (e) => {
-            e.preventDefault();
-            const tabId = e.target.id;
-
-            // Load chat content based on the clicked tab
-            loadChatContent(tabId);
+    // Populate chat rooms
+    chatRooms.forEach(room => {
+        const listItem = document.createElement('li');
+        listItem.textContent = room.name;
+        listItem.dataset.roomId = room.id;
+        listItem.classList.add('chat-room');
+        listItem.addEventListener('click', () => {
+            window.location.href = `chat.html?room=${room.id}`;
         });
+        roomList.appendChild(listItem);
     });
 
-    document.getElementById('logout-button').addEventListener('click', () => {
+    // Handle logout
+    logoutButton.addEventListener('click', () => {
         localStorage.removeItem('currentUser');
-        window.location.href = 'login.html'; // Redirect to login page after logout
+        window.location.href = 'login.html';
     });
-
-    function loadChatContent(tabId) {
-        chatContainer.innerHTML = `<p>Loading content for ${tabId}...</p>`;
-    }
 });
 
