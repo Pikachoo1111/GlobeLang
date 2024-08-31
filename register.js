@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (username && email && password) {
             const users = JSON.parse(localStorage.getItem('users') || '[]');
-            
+
             // Check if the username or email already exists
             const userExists = users.some(user => user.username === username || user.email === email);
             if (userExists) {
@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Store new user data
                 users.push({ username, email, password });
                 localStorage.setItem('users', JSON.stringify(users));
-                
+
                 // Redirect to login page
                 window.location.href = 'login.html';
             }
@@ -29,3 +29,4 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
