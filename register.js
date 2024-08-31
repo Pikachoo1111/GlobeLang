@@ -1,44 +1,31 @@
-document.getElementById('register-form').addEventListener('submit', async (e) => {
-    document.getElementById('register-form').addEventListener('submit', async (e) => {
+document.addEventListener('DOMContentLoaded', () => {
+    const registrationForm = document.getElementById('registration-form');
+    const errorMessage = document.getElementById('error-message');
+
+    registrationForm.addEventListener('submit', (e) => {
         e.preventDefault();
-    
+
         const username = document.getElementById('username').value;
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
-        const confirmPassword = document.getElementById('confirm-password').value;
-    
-        if (password !== confirmPassword) {
-            document.getElementById('error-message').textContent = 'Passwords do not match';
-            return;
-        }
-    
-        // Check if email or username is already registered
-        const identifierCheckResponse = await fetch('/check-identifier', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ identifier: username })
-        });
-    
-        const identifierCheckResult = await identifierCheckResponse.json();
-    
-        if (identifierCheckResult.exists) {
-            document.getElementById('error-message').textContent = 'Username or email already registered. Please log in.';
-            return;
-        }
-    
-        // Handle registration
-        const response = await fetch('/register', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, email, password })
-        });
-    
-        const result = await response.json();
-    
-        if (result.success) {
-            window.location.href = 'login.html'; // Redirect to login page after successful registration
+
+        if (username && email && password) {
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            
+            // Check if the username or email already exists
+            const userExists = users.some(user => user.username === username || user.email === email);
+            if (userExists) {
+                errorMessage.textContent = 'Username or email already exists.';
+            } else {
+                // Store new user data
+                users.push({ username, email, password });
+                localStorage.setItem('users', JSON.stringify(users));
+                
+                // Redirect to login page
+                window.location.href = 'login.html';
+            }
         } else {
-            document.getElementById('error-message').textContent = result.message;
+            errorMessage.textContent = 'All fields are required.';
         }
     });
-    
+});

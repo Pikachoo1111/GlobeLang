@@ -1,4 +1,10 @@
 document.addEventListener('DOMContentLoaded', () => {
+    const currentUser = localStorage.getItem('currentUser');
+    if (!currentUser) {
+        window.location.href = 'login.html'; // Redirect to login if not logged in
+        return;
+    }
+
     const tabs = document.querySelectorAll('#sidebar ul li a');
     const chatContainer = document.getElementById('chat-container');
 
@@ -13,13 +19,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     document.getElementById('logout-button').addEventListener('click', () => {
-        localStorage.removeItem('user');
+        localStorage.removeItem('currentUser');
         window.location.href = 'login.html'; // Redirect to login page after logout
     });
 
     function loadChatContent(tabId) {
-        // Example content loading based on tab ID
-        // Replace this with actual chat content fetching logic
         chatContainer.innerHTML = `<p>Loading content for ${tabId}...</p>`;
     }
 });

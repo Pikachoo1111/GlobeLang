@@ -4,21 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register - Chat App</title>
-    <link rel="stylesheet" href="register.css">
+    <link rel="stylesheet" href="css/registration.css">
 </head>
 <body>
-    <div id="register-container">
+    <div id="registration-container">
         <h2>Register</h2>
-        <form id="register-form">
+        <form id="registration-form">
             <input type="text" id="username" placeholder="Username" required />
             <input type="email" id="email" placeholder="Email" required />
             <input type="password" id="password" placeholder="Password" required />
-            <input type="password" id="confirm-password" placeholder="Confirm Password" required />
             <button type="submit">Register</button>
             <p id="error-message"></p>
         </form>
-        <p>Already have an account? <a href="login.html">Login here</a></p>
+        <p id="already-have-account">Already have an account? <a href="login.html">Login here</a></p>
     </div>
-    <script src="js/register.js"></script>
+    <script src="js/registration.js"></script>
 </body>
 </html>
