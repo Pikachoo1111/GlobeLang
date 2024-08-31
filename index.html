@@ -1,35 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat App</title>
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <!-- Person selector: this contains buttons for user to select whether to chat as John or Jane -->
-    <div class="person-selector">
-      <button class="button person-selector-button active-person" id="john-selector">John</button>
-      <button class="button person-selector-button" id="jane-selector">Jane</button>
-    </div>
-    <div class="chat-container">
-      <h2 class="chat-header"> </h2>
-
-      <div class="chat-messages">
-        <div class="message blue-bg">
-          <div class="message-sender">Systen</div>
-          <div class="message-text">Write messages and click send button!</div>
-          <div class="message-timestamp">00:00 AM</div>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app" style="display: none;">
+        <div id="sidebar">
+            <h2>Channels</h2>
+            <ul id="channel-list">
+                <li class="channel active" data-channel="general"># General</li>
+                <li class="channel" data-channel="random"># Random</li>
+            </ul>
+            <button id="logout-button">Logout</button>
         </div>
-      </div>
-
-      <form class="chat-input-form">
-        <input type="text" class="chat-input" required placeholder="Type here" />
-        <button type="submit" class="button send-button">Send</button>
-      </form>
-      <button class="button clear-chat-button">Clear Chat</button>
+        <div id="main">
+            <div id="message-container"></div>
+            <div id="message-input-container">
+                <input type="text" id="message-input" placeholder="Type a message..." />
+                <button id="send-button">Send</button>
+            </div>
+        </div>
     </div>
-
-    <script src="app.js"></script>
-  </body>
+    <script src="script.js"></script>
+</body>
 </html>
