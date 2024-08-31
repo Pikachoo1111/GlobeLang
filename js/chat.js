@@ -11,6 +11,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
     const roomId = urlParams.get('room');
 
+    if (!roomId) {
+        console.error('Room ID not found in URL');
+        return;
+    }
+
     // Load chat rooms from local storage
     let chatRooms = JSON.parse(localStorage.getItem('chatRooms') || '[]');
     const room = chatRooms.find(room => room.id === roomId);
