@@ -8,42 +8,53 @@ const path = require('path');
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
-
-// Serve static files from the "public" directory
 app.use(express.static(path.join(__dirname, 'public')));
 
-const users = []; // In-memory user store
+const users = []; // In-memory user store (for demonstration purposes)
 
+// Register new user
 app.post('/register', (req, res) => {
     const { username, email, password } = req.body;
 
-    if (users.find(u => u.email === email)) {
-        return res.json({ success: false, message: 'User already exists' });
+    // Check if email or username already exists
+    if (users.find(u => u.email === email || u.username === username)) {
+        return res.json({ success: false, message: 'Email or username already registered' });
     }
 
+    // Validate password length
     if (password.length < 6) {
         return res.json({ success: false, message: 'Password must be at least 6 characters long' });
     }
 
+    // Hash password and store user
     const hashedPassword = bcrypt.hashSync(password, 8);
     users.push({ username, email, password: hashedPassword });
     res.json({ success: true });
 });
 
+// Login user
 app.post('/login', (req, res) => {
-    const { email, password } = req.body;
-    const user = users.find(u => u.email === email);
-    if (!user) {
-        return res.json({ success: false, message: 'Account not found' });
+    const { identifier, password } = req.body;
+    const user = users.find(u => u.email === identifier || u.username === identifier);
+
+    // Check if user exists and password is correct
+    if (!user || !bcrypt.compareSync(password, user.password)) {
+        return res.json({ success: false, message: 'Invalid email/username or password' });
     }
-    if (bcrypt.compareSync(password, user.password)) {
-        const token = jwt.sign({ email }, 'secret', { expiresIn: '1h' });
-        res.json({ success: true, user: { email, username: user.username }, token });
-    } else {
-        res.json({ success: false, message: 'Invalid password' });
-    }
+
+    // Generate JWT token
+    const token = jwt.sign({ email: user.email, username: user.username }, 'secret', { expiresIn: '1h' });
+    res.json({ success: true, user: { email: user.email, username: user.username }, token });
+});
+
+// Check if email or username is already registered
+app.post('/check-identifier', (req, res) => {
+    const { identifier } = req.body;
+    const userExists = users.some(u => u.email === identifier || u.username === identifier);
+    res.json({ exists: userExists });
 });
 
 app.listen(3000, () => {
     console.log('Server running on port 3000');
 });
+
