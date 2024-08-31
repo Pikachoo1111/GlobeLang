@@ -1,27 +1,22 @@
 document.getElementById('login-form').addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    const email = document.getElementById('email').value;
+    const identifier = document.getElementById('identifier').value;
     const password = document.getElementById('password').value;
 
-    const response = await fetch('/login', {
+    // Handle login
+    const loginResponse = await fetch('/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ identifier, password })
     });
 
-    const result = await response.json();
+    const result = await loginResponse.json();
 
     if (result.success) {
-        // localStorage.setItem('user', JSON.stringify(result.user));
-        window.location.href = 'index.html'; // Redirect to the chat app
+        localStorage.setItem('user', JSON.stringify(result.user));
+        window.location.href = 'home.html'; // Redirect to the home page after login
     } else {
-        // document.getElementById('error-message').textContent = result.message;
-        // if (result.message === 'Account not found') {
-        //     document.getElementById('register-prompt').textContent = 'Click the link above to create an account.';
-        // }
-        // localStorage.setItem('user', JSON.stringify(result.user));
-        window.location.href = 'index.html'; // Redirect to the chat app    
-    
+        document.getElementById('error-message').textContent = result.message;
     }
 });
