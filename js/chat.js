@@ -2,6 +2,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const roomNameElement = document.getElementById('room-name');
     const messageInput = document.getElementById('message-input');
     const sendMessageButton = document.getElementById('send-message');
+    const inviteInput = document.getElementById('invite-input');
+    const inviteButton = document.getElementById('invite-button');
     const messagesContainer = document.getElementById('messages');
     const backButton = document.getElementById('back-button');
 
@@ -9,28 +11,60 @@ document.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
     const roomId = urlParams.get('room');
 
-    // Example chat rooms (could be loaded from a server or database in a real app)
-    const chatRooms = [
-        { id: 'room1', name: 'General Chat' },
-        { id: 'room2', name: 'Tech Talk' },
-        { id: 'room3', name: 'Random' }
-    ];
-
+    // Load chat rooms from local storage
+    let chatRooms = JSON.parse(localStorage.getItem('chatRooms') || '[]');
     const room = chatRooms.find(room => room.id === roomId);
+
     if (room) {
         roomNameElement.textContent = room.name;
     } else {
         roomNameElement.textContent = 'Unknown Room';
     }
 
+    // Load messages from local storage
+    let messages = JSON.parse(localStorage.getItem(`messages_${roomId}`) || '[]');
+
+    // Display messages
+    function displayMessages() {
+        messagesContainer.innerHTML = '';
+        messages.forEach(msg => {
+            const messageElement = document.createElement('div');
+            messageElement.textContent = `${msg.user}: ${msg.text}`;
+            messagesContainer.appendChild(messageElement);
+        });
+    }
+
+    displayMessages();
+
     // Handle sending messages
     sendMessageButton.addEventListener('click', () => {
-        const message = messageInput.value;
-        if (message) {
-            const messageElement = document.createElement('div');
-            messageElement.textContent = `You: ${message}`;
-            messagesContainer.appendChild(messageElement);
+        const messageText = messageInput.value.trim();
+        const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+        if (messageText && currentUser.username) {
+            const newMessage = {
+                user: currentUser.username,
+                text: messageText
+            };
+            messages.push(newMessage);
+            localStorage.setItem(`messages_${roomId}`, JSON.stringify(messages));
+            displayMessages();
             messageInput.value = '';
+        }
+    });
+
+    // Handle inviting users
+    inviteButton.addEventListener('click', () => {
+        const inviteTarget = inviteInput.value.trim();
+        if (inviteTarget) {
+            // Simulate sending an invitation
+            console.log(`Inviting ${inviteTarget} to room ${roomId}`);
+
+            // Update the UI
+            const inviteMessageElement = document.createElement('div');
+            inviteMessageElement.textContent = `Invitation sent to ${inviteTarget}`;
+            messagesContainer.appendChild(inviteMessageElement);
+
+            inviteInput.value = '';
         }
     });
 

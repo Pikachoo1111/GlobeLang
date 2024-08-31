@@ -28,11 +28,11 @@ body {
 }
 
 input[type="text"] {
-    width: calc(100% - 20px);
+    width: calc(100% - 22px);
     padding: 10px;
     border: 1px solid #4f545c;
     border-radius: 5px;
-    background-color: #40444b;
+    background-color: hwb(218 25% 71%) 25% 71%);
     color: #dcddde;
 }
 
