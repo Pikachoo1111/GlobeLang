@@ -35,8 +35,10 @@ document.getElementById('register-form').addEventListener('submit', async (e) =>
     const result = await response.json();
 
     if (result.success) {
-        window.location.href = 'login.html'; // Redirect to login page after successful registration
+        // Redirect to login page after successful registration
+        window.location.href = 'login.html';
     } else {
         document.getElementById('error-message').textContent = result.message;
     }
 });
+
