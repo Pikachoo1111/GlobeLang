@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const inviteUsername = inviteInput.value.trim();
         if (inviteUsername) {
             let users = JSON.parse(localStorage.getItem('users') || '[]');
-            if (users.some(user => user.username === inviteUsername)) {
+            if (users.some(user => user.username === inviteUsername || user.email === inviteUsername)) {
                 if (!room.users.includes(inviteUsername)) {
                     room.users.push(inviteUsername);
                     localStorage.setItem('chatRooms', JSON.stringify(chatRooms));
