@@ -25,3 +25,4 @@ document.getElementById('register-form').addEventListener('submit', async (e) =>
         document.getElementById('error-message').textContent = result.message;
     }
 });
+//this is a comment im gonna push it now
