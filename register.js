@@ -11,6 +11,21 @@ document.getElementById('register-form').addEventListener('submit', async (e) =>
         return;
     }
 
+    // Check if email or username is already registered
+    const identifierCheckResponse = await fetch('/check-identifier', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ identifier: email })
+    });
+
+    const identifierCheckResult = await identifierCheckResponse.json();
+
+    if (identifierCheckResult.exists) {
+        document.getElementById('error-message').textContent = 'Email or username already registered. Please log in.';
+        return;
+    }
+
+    // Handle registration
     const response = await fetch('/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -20,9 +35,8 @@ document.getElementById('register-form').addEventListener('submit', async (e) =>
     const result = await response.json();
 
     if (result.success) {
-        window.location.href = 'login.html'; // Redirect to login page
+        window.location.href = 'login.html'; // Redirect to login page after successful registration
     } else {
         document.getElementById('error-message').textContent = result.message;
     }
 });
-//this is a comment im gonna push it now
