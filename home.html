@@ -7,21 +7,26 @@
     <link rel="stylesheet" href="css/home.css">
 </head>
 <body>
-    <div id="home-container">
-        <h2>Welcome to the Chat App</h2>
-        <p id="welcome-message"></p>
-        <!-- Your app content goes here -->
-        <button id="logout-button">Logout</button>
+    <div id="container">
+        <aside id="sidebar">
+            <h2>Chat App</h2>
+            <ul>
+                <li><a href="#" id="tab1">Chat Room 1</a></li>
+                <li><a href="#" id="tab2">Chat Room 2</a></li>
+                <li><a href="#" id="tab3">Chat Room 3</a></li>
+                <li><a href="#" id="tab4">Chat Room 4</a></li>
+                <!-- Add more tabs as needed -->
+            </ul>
+            <button id="logout-button">Logout</button>
+        </aside>
+        <main id="main-content">
+            <div id="chat-container">
+                <!-- Content for chat rooms will be dynamically loaded here -->
+                <p>Select a chat room to start chatting.</p>
+            </div>
+        </main>
     </div>
     <script src="js/home.js"></script>
-    <script>
-        // Check if user is logged in
-        if (!localStorage.getItem('user')) {
-            window.location.href = 'login.html'; // Redirect to login if not logged in
-        } else {
-            const user = JSON.parse(localStorage.getItem('user'));
-            document.getElementById('welcome-message').textContent = `Hello, ${user.username || user.email}!`;
-        }
-    </script>
 </body>
 </html>
+

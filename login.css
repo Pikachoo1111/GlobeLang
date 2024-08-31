@@ -25,7 +25,7 @@ body {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     width: 300px;
     text-align: center;
-    background-color: #36393f; /* Match the background color of inputs */
+    background-color: #40444b;
 }
 
 h2 {
@@ -59,4 +59,18 @@ form button:hover {
 #error-message {
     color: red;
     margin-top: 10px;
+}
+
+#no-account {
+    margin-top: 15px;
+    color: #dcddde;
+}
+
+#no-account a {
+    color: #5865f2;
+    text-decoration: none;
+}
+
+#no-account a:hover {
+    text-decoration: underline;
 }

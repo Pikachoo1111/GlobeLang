@@ -1,57 +1,66 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const cors = require('cors');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+const fs = require('fs');
 const path = require('path');
 
 const app = express();
-app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-const users = []; // In-memory user store (for demonstration purposes)
+const usersFilePath = path.join(__dirname, 'users.json');
+
+// Helper function to read users from file
+const readUsersFromFile = () => {
+    if (!fs.existsSync(usersFilePath)) {
+        return {};
+    }
+    const data = fs.readFileSync(usersFilePath);
+    return JSON.parse(data);
+};
+
+// Helper function to write users to file
+const writeUsersToFile = (users) => {
+    fs.writeFileSync(usersFilePath, JSON.stringify(users, null, 2));
+};
 
 // Register new user
 app.post('/register', (req, res) => {
     const { username, email, password } = req.body;
+    const users = readUsersFromFile();
 
-    // Check if email or username already exists
-    if (users.find(u => u.email === email || u.username === username)) {
-        return res.json({ success: false, message: 'Email or username already registered' });
+    if (users[username] || Object.values(users).includes(password)) {
+        return res.json({ success: false, message: 'Username or email already registered' });
     }
 
-    // Validate password length
     if (password.length < 6) {
         return res.json({ success: false, message: 'Password must be at least 6 characters long' });
     }
 
-    // Hash password and store user
-    const hashedPassword = bcrypt.hashSync(password, 8);
-    users.push({ username, email, password: hashedPassword });
+    users[username] = password;
+    writeUsersToFile(users);
     res.json({ success: true });
 });
 
 // Login user
 app.post('/login', (req, res) => {
     const { identifier, password } = req.body;
-    const user = users.find(u => u.email === identifier || u.username === identifier);
+    const users = readUsersFromFile();
 
-    // Check if user exists and password is correct
-    if (!user || !bcrypt.compareSync(password, user.password)) {
-        return res.json({ success: false, message: 'Invalid email/username or password' });
+    if (users[identifier] === password) {
+        res.json({ success: true, message: 'Login successful' });
+    } else {
+        // Check if identifier (username or email) exists
+        const exists = Object.keys(users).includes(identifier);
+        res.json({ success: false, message: exists ? 'Invalid password' : 'Account does not exist' });
     }
-
-    // Generate JWT token
-    const token = jwt.sign({ email: user.email, username: user.username }, 'secret', { expiresIn: '1h' });
-    res.json({ success: true, user: { email: user.email, username: user.username }, token });
 });
 
 // Check if email or username is already registered
 app.post('/check-identifier', (req, res) => {
     const { identifier } = req.body;
-    const userExists = users.some(u => u.email === identifier || u.username === identifier);
-    res.json({ exists: userExists });
+    const users = readUsersFromFile();
+    const exists = Object.keys(users).includes(identifier);
+    res.json({ exists });
 });
 
 app.listen(3000, () => {

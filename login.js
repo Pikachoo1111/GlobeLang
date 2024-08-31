@@ -1,23 +1,28 @@
-document.getElementById('login-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
+document.addEventListener('DOMContentLoaded', () => {
+    const loginForm = document.getElementById('login-form');
+    const errorMessage = document.getElementById('error-message');
 
-    const identifier = document.getElementById('identifier').value;
-    const password = document.getElementById('password').value;
+    loginForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        const identifier = document.getElementById('identifier').value;
+        const password = document.getElementById('password').value;
 
-    // Handle login
-    const loginResponse = await fetch('/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ identifier, password })
+        // Replace this with actual user validation logic
+        if (validateUser(identifier, password)) {
+            // Store user info in localStorage
+            localStorage.setItem('user', JSON.stringify({ identifier }));
+            
+            // Redirect to home screen
+            window.location.href = 'home.html';
+        } else {
+            errorMessage.textContent = 'Invalid username/email or password.';
+        }
     });
 
-    const result = await loginResponse.json();
-
-    if (result.success) {
-        localStorage.setItem('user', JSON.stringify(result.user)); // Save user info
-        localStorage.setItem('token', result.token); // Save JWT token
-        window.location.href = 'home.html'; // Redirect to the home page after login
-    } else {
-        document.getElementById('error-message').textContent = result.message; // Show error message
+    function validateUser(identifier, password) {
+        // Mock validation function, replace with actual logic
+        const users = JSON.parse(localStorage.getItem('users') || '[]');
+        return users.some(user => (user.username === identifier || user.email === identifier) && user.password === password);
     }
 });
