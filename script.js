@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const user = JSON.parse(localStorage.getItem('user'));
     if (!user) {
-        window.location.href = 'login.html'; // Redirect to login if not authenticated
+        window.location.href = '../login/login.html'; // Redirect to login if not authenticated
         return;
     }
 
@@ -53,6 +53,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function logout() {
         localStorage.removeItem('user');
-        window.location.href = 'login.html'; // Redirect to login on logout
+        window.location.href = '../login/login.html'; // Redirect to login on logout
     }
 });

@@ -23,6 +23,6 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('users', JSON.stringify(users));
 
         // Redirect to login page
-        window.location.href = 'login.html';
+        window.location.href = '../login/login.html';
     });
 });

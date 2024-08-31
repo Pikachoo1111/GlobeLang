@@ -1,84 +1,29 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const roomNameElement = document.getElementById('room-name');
-    const messageInput = document.getElementById('message-input');
-    const sendMessageButton = document.getElementById('send-message');
-    const inviteInput = document.getElementById('invite-input');
-    const inviteButton = document.getElementById('invite-button');
-    const messagesContainer = document.getElementById('messages');
-    const backButton = document.getElementById('back-button');
-
-    const urlParams = new URLSearchParams(window.location.search);
-    const roomId = urlParams.get('room');
-
-    if (!roomId) {
-        console.error('Room ID not found in URL');
-        return;
-    }
-
-    // Retrieve chat rooms from localStorage
-    let chatRooms = JSON.parse(localStorage.getItem('chatRooms') || '[]');
-    let room = chatRooms.find(room => room.id === roomId);
-
-    if (room) {
-        roomNameElement.textContent = room.name;
-    } else {
-        roomNameElement.textContent = 'Unknown Room';
-    }
-
-    let messages = JSON.parse(localStorage.getItem(`messages_${roomId}`) || '[]');
-
-    function displayMessages() {
-        messagesContainer.innerHTML = '';
-        messages.forEach(msg => {
-            const messageElement = document.createElement('div');
-            messageElement.textContent = `${msg.user}: ${msg.text}`;
-            messagesContainer.appendChild(messageElement);
-        });
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    }
-
-    displayMessages();
-
-    sendMessageButton.addEventListener('click', () => {
-        const messageText = messageInput.value.trim();
-        const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-        if (messageText && currentUser.username) {
-            const newMessage = {
-                user: currentUser.username,
-                text: messageText
-            };
-            messages.push(newMessage);
-            localStorage.setItem(`messages_${roomId}`, JSON.stringify(messages));
-            displayMessages();
-            messageInput.value = '';
-        }
-    });
-
-    inviteButton.addEventListener('click', () => {
-        const inviteUsername = inviteInput.value.trim();
-        if (inviteUsername) {
-            let users = JSON.parse(localStorage.getItem('users') || '[]');
-            if (users.some(user => user.username === inviteUsername || user.email === inviteUsername)) {
-                if (!room.users.includes(inviteUsername)) {
-                    room.users.push(inviteUsername);
-                    localStorage.setItem('chatRooms', JSON.stringify(chatRooms));
-                    inviteInput.value = '';
-                    alert(`User ${inviteUsername} has been invited to the room.`);
-                } else {
-                    alert(`User ${inviteUsername} is already in the room.`);
-                }
-            } else {
-                alert(`User ${inviteUsername} does not exist.`);
-            }
-        }
-    });
-
-    backButton.addEventListener('click', () => {
-        window.location.href = '../home.html';
-    });
-
-    setInterval(() => {
-        displayMessages();
-    }, 1000);
-});
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat App</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app" style="display: none;">
+        <div id="sidebar">
+            <h2>Channels</h2>
+            <ul id="channel-list">
+                <li class="channel active" data-channel="general"># General</li>
+                <li class="channel" data-channel="random"># Random</li>
+            </ul>
+            <button id="logout-button">Logout</button>
+        </div>
+        <div id="main">
+            <div id="message-container"></div>
+            <div id="message-input-container">
+                <input type="text" id="message-input" placeholder="Type a message..." />
+                <button id="send-button">Send</button>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

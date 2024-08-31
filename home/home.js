@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
             roomElement.textContent = room.name;
             roomElement.classList.add('room');
             roomElement.addEventListener('click', () => {
-                window.location.href = `chat.html?room=${room.id}`;
+                window.location.href = `../chat/chat.html?room=${room.id}`;
             });
             chatRoomsContainer.appendChild(roomElement);
         });
@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     logoutButton.addEventListener('click', () => {
         localStorage.removeItem('currentUser');
-        window.location.href = 'login.html';
+        window.location.href = '../login/login.html';
     });
 
     updateChatRooms();
