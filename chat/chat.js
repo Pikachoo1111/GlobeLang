@@ -25,6 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let messages = JSON.parse(localStorage.getItem(`messages_${roomId}`) || '[]');
 
     function displayMessages() {
+        let messages = JSON.parse(localStorage.getItem(`messages_${roomId}`) || '[]');
         messagesContainer.innerHTML = '';
         messages.forEach(msg => {
             const messageElement = document.createElement('div');
@@ -51,21 +52,19 @@ document.addEventListener('DOMContentLoaded', () => {
             messageInput.value = '';
 
             // Send message to the translation server
-            const translation = await translateText(messageText, targetLang);
-            if (translation) {
-                const translatedMessage = {
-                    user: 'Translation',
-                    text: `${translation.original_text} (Literal Translation: ${translation.literal_translation}, Contextual Translation: ${translation.contextual_translation})`
-                };
-                messages.push(translatedMessage);
-                localStorage.setItem(`messages_${roomId}`, JSON.stringify(messages));
-                displayMessages();
-            }
+            // const translation = await translateText(messageText, targetLang);
+            // if (translation) {
+            //     const translatedMessage = {
+            //         user: 'Translation',
+            //         text: `${translation.original_text} (Literal Translation: ${translation.literal_translation}, Contextual Translation: ${translation.contextual_translation})`
+            //     };
+            //     messages.push(translatedMessage);
+            //     localStorage.setItem(`messages_${roomId}`, JSON.stringify(messages));
+            //     displayMessages();
+            // }
         }
     });
 
-    setInterval(() => {
-        displayMessages();
-    }, 1000);
+    setInterval(() => {displayMessages();}, 5);
 });
 
