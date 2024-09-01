@@ -12,13 +12,14 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateChatRooms() {
         chatRoomsContainer.innerHTML = '';
         chatRooms.forEach(room => {
-            const roomElement = document.createElement('div');
-            roomElement.textContent = room.name;
-            roomElement.classList.add('room');
-            roomElement.addEventListener('click', () => {
+            // Create a button instead of a div for each room
+            const roomButton = document.createElement('button');
+            roomButton.textContent = room.name;
+            roomButton.classList.add('room-button');  // Add a class for styling buttons
+            roomButton.addEventListener('click', () => {
                 window.location.href = `../chat/chat.html?room=${room.id}`;
             });
-            chatRoomsContainer.appendChild(roomElement);
+            chatRoomsContainer.appendChild(roomButton);
         });
     }
 
