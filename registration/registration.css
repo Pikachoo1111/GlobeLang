@@ -42,7 +42,7 @@ form input {
     color: #dcddde;
 }
 
-form button {
+button {
     width: 100%;
     padding: 10px;
     border: none;
@@ -52,7 +52,7 @@ form button {
     cursor: pointer;
 }
 
-form button:hover {
+button:hover {
     background-color: #4752c4;
 }
 
