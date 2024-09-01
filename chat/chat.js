@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const messageInput = document.getElementById('message-input');
     const sendMessageButton = document.getElementById('send-message');
     const messagesContainer = document.getElementById('messages');
+    const languageSelect = document.getElementById('language-select');  // Dropdown for language selection
 
     const urlParams = new URLSearchParams(window.location.search);
     const roomId = urlParams.get('room');
@@ -35,14 +36,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     displayMessages();
 
-    async function translateText(text) {
+    async function translateText(text, targetLang) {
         try {
-            const response = await fetch('http://127.0.0.1:5001/translate', { // Updated port number
+            const response = await fetch('http://127.0.0.1:5001/translate', { // Ensure port matches
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ text: text })
+                body: JSON.stringify({ text: text, target_lang: targetLang })
             });
 
             if (response.ok) {
@@ -60,6 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     sendMessageButton.addEventListener('click', async () => {
         const messageText = messageInput.value.trim();
+        const targetLang = languageSelect.value;  // Get selected language
         const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
         if (messageText && currentUser.username) {
             const newMessage = {
@@ -72,7 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
             messageInput.value = '';
 
             // Send message to the translation server
-            const translation = await translateText(messageText);
+            const translation = await translateText(messageText, targetLang);
             if (translation) {
                 const translatedMessage = {
                     user: 'Translation',
