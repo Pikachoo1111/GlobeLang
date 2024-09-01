@@ -2,10 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const roomNameElement = document.getElementById('room-name');
     const messageInput = document.getElementById('message-input');
     const sendMessageButton = document.getElementById('send-message');
-    const inviteInput = document.getElementById('invite-input');
-    const inviteButton = document.getElementById('invite-button');
     const messagesContainer = document.getElementById('messages');
-    const backButton = document.getElementById('back-button');
 
     const urlParams = new URLSearchParams(window.location.search);
     const roomId = urlParams.get('room');
@@ -38,33 +35,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
     displayMessages();
 
-    async function translateText(text, targetLang = 'en', type = 'literal') {
+    async function translateText(text) {
         try {
-            const response = await fetch('http://localhost:5000/translate', {
+            const response = await fetch('http://127.0.0.1:5000/translate', { // URL to your Python server
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ text: text, target_lang: targetLang, type: type })
+                body: JSON.stringify({ text: text })
             });
 
             if (response.ok) {
                 const data = await response.json();
-                return data.translated_text; 
+                return `${data.original_text} (Literal Translation: ${data.translated_text})`;
             } else {
                 console.error('Translation error:', response.statusText);
-                return 'Translation error occurred.';
+                return 'Translation failed due to server error.';
             }
         } catch (error) {
             console.error('Error communicating with the translation server:', error);
-            return 'Server communication error.';
+            return 'Unable to reach the translation server. Please check your network or server settings.';
         }
     }
 
     sendMessageButton.addEventListener('click', async () => {
         const messageText = messageInput.value.trim();
         const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-
         if (messageText && currentUser.username) {
             const newMessage = {
                 user: currentUser.username,
@@ -75,43 +71,18 @@ document.addEventListener('DOMContentLoaded', () => {
             displayMessages();
             messageInput.value = '';
 
-            // Perform both literal and contextual translations
-            const literalTranslation = await translateText(messageText, 'en', 'literal');
-            const contextualTranslation = await translateText(messageText, 'en', 'contextual');
-
-            if (literalTranslation && contextualTranslation) {
+            // Send message to the translation server
+            const translation = await translateText(messageText);
+            if (translation) {
                 const translatedMessage = {
                     user: 'Translation',
-                    text: `${messageText} (Literal: ${literalTranslation}, Contextual: ${contextualTranslation})`
+                    text: translation
                 };
                 messages.push(translatedMessage);
                 localStorage.setItem(`messages_${roomId}`, JSON.stringify(messages));
                 displayMessages();
             }
         }
-    });
-
-    inviteButton.addEventListener('click', () => {
-        const inviteUsername = inviteInput.value.trim();
-        if (inviteUsername) {
-            let users = JSON.parse(localStorage.getItem('users') || '[]');
-            if (users.some(user => user.username === inviteUsername || user.email === inviteUsername)) {
-                if (!room.users.includes(inviteUsername)) {
-                    room.users.push(inviteUsername);
-                    localStorage.setItem('chatRooms', JSON.stringify(chatRooms));
-                    inviteInput.value = '';
-                    alert(`User ${inviteUsername} has been invited to the room.`);
-                } else {
-                    alert(`User ${inviteUsername} is already in the room.`);
-                }
-            } else {
-                alert(`User ${inviteUsername} does not exist.`);
-            }
-        }
-    });
-
-    backButton.addEventListener('click', () => {
-        window.location.href = '../home/home.html';
     });
 
     setInterval(() => {
