@@ -16,6 +16,7 @@ body {
     width: 400px;
     background-color: #40444b;
     text-align: center;
+    position: relative;
 }
 
 #messages {

@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const inviteButton = document.getElementById('invite-button');
     const messagesContainer = document.getElementById('messages');
     const backButton = document.getElementById('back-button');
+    const languageSelect = document.getElementById('language-select');
 
     const urlParams = new URLSearchParams(window.location.search);
     const roomId = urlParams.get('room');
@@ -30,7 +31,11 @@ document.addEventListener('DOMContentLoaded', () => {
         messagesContainer.innerHTML = '';
         messages.forEach(msg => {
             const messageElement = document.createElement('div');
-            messageElement.textContent = `${msg.user}: ${msg.text}`;
+            messageElement.innerHTML = `
+                <strong>${msg.user}:</strong> 
+                <div>Original: ${msg.originalText}</div>
+                <div>Translated: ${msg.translatedText}</div>
+            `;
             messagesContainer.appendChild(messageElement);
         });
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
@@ -38,48 +43,64 @@ document.addEventListener('DOMContentLoaded', () => {
 
     displayMessages();
 
-    async function sendMessageToChatGPT(message) {
+    async function translateText(text, targetLang = 'en') {
         try {
-            const response = await fetch('https://api.openai.com/v1/chat/completions', {
+            const response = await fetch('https://libretranslate.de/translate', { // LibreTranslate API endpoint
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer YOUR_OPENAI_API_KEY`
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    model: "gpt-4", // Or "gpt-3.5-turbo" depending on your preference
-                    messages: [{role: "user", content: message}],
+                    q: text,
+                    source: 'auto',
+                    target: targetLang
                 })
             });
 
+            if (!response.ok) {
+                throw new Error(`Network response was not ok: ${response.statusText}`);
+            }
+
             const data = await response.json();
-            return data.choices[0].message.content;
+            return data.translatedText; // LibreTranslate returns translation in the field 'translatedText'
         } catch (error) {
-            console.error('Error sending message to ChatGPT:', error);
+            console.error('Error translating text:', error);
+            return text; // Fallback to the original text in case of error
         }
+    }
+
+    async function handleMessageTranslation(messageText, targetLang = 'en') {
+        // Translate the whole message to the target language
+        const translatedMessage = await translateText(messageText, targetLang);
+
+        return translatedMessage;
     }
 
     sendMessageButton.addEventListener('click', async () => {
         const messageText = messageInput.value.trim();
+        const targetLang = languageSelect.value; // Get the selected target language
         const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
         if (messageText && currentUser.username) {
-            const newMessage = {
-                user: currentUser.username,
-                text: messageText
-            };
-            messages.push(newMessage);
-            localStorage.setItem(`messages_${roomId}`, JSON.stringify(messages));
-            displayMessages();
-            messageInput.value = '';
-
-            // Send message to ChatGPT
-            const chatGPTResponse = await sendMessageToChatGPT(messageText);
-            if (chatGPTResponse) {
-                const gptMessage = {
-                    user: 'ChatGPT',
-                    text: chatGPTResponse
+            // Translate the message
+            const translatedMessage = await handleMessageTranslation(messageText, targetLang);
+            if (translatedMessage) {
+                const newMessage = {
+                    user: currentUser.username,
+                    originalText: messageText,
+                    translatedText: translatedMessage // Show both original and translated messages
                 };
-                messages.push(gptMessage);
+                messages.push(newMessage);
+                localStorage.setItem(`messages_${roomId}`, JSON.stringify(messages));
+                displayMessages();
+                messageInput.value = '';
+            } else {
+                // If translation fails, show a fallback message
+                const errorMessage = {
+                    user: 'Translator',
+                    originalText: messageText,
+                    translatedText: "Error translating message. Please check your input or try again later."
+                };
+                messages.push(errorMessage);
                 localStorage.setItem(`messages_${roomId}`, JSON.stringify(messages));
                 displayMessages();
             }
