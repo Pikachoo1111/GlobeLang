@@ -71,7 +71,7 @@ body {
     color: #dcddde;
 }
 
-#create-room-form button {
+button {
     width: 100%;
     padding: 10px;
     border: none;
@@ -81,7 +81,6 @@ body {
     cursor: pointer;
     margin-top: 10px;
 }
-
-#create-room-form button:hover {
+button:hover {
     background-color: #4752c4;
 }
