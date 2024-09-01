@@ -38,19 +38,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     displayMessages();
 
-    async function translateText(text, targetLang) {
+    async function translateText(text, targetLang = 'en', type = 'literal') {
         try {
             const response = await fetch('http://localhost:5000/translate', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ text: text, target_lang: targetLang })
+                body: JSON.stringify({ text: text, target_lang: targetLang, type: type })
             });
 
             if (response.ok) {
                 const data = await response.json();
-                return data.translated_text; // Return the translated text
+                return data.translated_text; 
             } else {
                 console.error('Translation error:', response.statusText);
                 return 'Translation error occurred.';
@@ -75,12 +75,14 @@ document.addEventListener('DOMContentLoaded', () => {
             displayMessages();
             messageInput.value = '';
 
-            // Send message to translation server
-            const translatedText = await translateText(messageText, 'en'); // Example: translate to English
-            if (translatedText) {
+            // Perform both literal and contextual translations
+            const literalTranslation = await translateText(messageText, 'en', 'literal');
+            const contextualTranslation = await translateText(messageText, 'en', 'contextual');
+
+            if (literalTranslation && contextualTranslation) {
                 const translatedMessage = {
                     user: 'Translation',
-                    text: `${messageText} (Translated: ${translatedText})`
+                    text: `${messageText} (Literal: ${literalTranslation}, Contextual: ${contextualTranslation})`
                 };
                 messages.push(translatedMessage);
                 localStorage.setItem(`messages_${roomId}`, JSON.stringify(messages));
