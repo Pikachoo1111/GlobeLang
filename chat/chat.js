@@ -37,14 +37,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function translateText(text) {
         try {
-            const response = await fetch('http://127.0.0.1:5000/translate', { // URL to your Python server
+            const response = await fetch('http://127.0.0.1:5001/translate', { // Updated port number
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({ text: text })
             });
-
+    
             if (response.ok) {
                 const data = await response.json();
                 return `${data.original_text} (Literal Translation: ${data.translated_text})`;
@@ -57,6 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return 'Unable to reach the translation server. Please check your network or server settings.';
         }
     }
+    
 
     sendMessageButton.addEventListener('click', async () => {
         const messageText = messageInput.value.trim();
@@ -89,3 +90,4 @@ document.addEventListener('DOMContentLoaded', () => {
         displayMessages();
     }, 1000);
 });
+
