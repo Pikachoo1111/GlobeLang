@@ -19,15 +19,18 @@ def translate():
         # Translate the text to English
         translation = translator.translate(text, dest='en')
 
+        # You can further customize the response if needed
         return jsonify({
             'original_text': text,
-            'translated_text': translation.text
+            'literal_translation': translation.text,
+            'contextual_translation': translation.text
         })
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001) 
+ 
 
 
 

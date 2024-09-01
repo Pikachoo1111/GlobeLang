@@ -44,10 +44,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 body: JSON.stringify({ text: text })
             });
-    
+
             if (response.ok) {
                 const data = await response.json();
-                return `${data.original_text} (Literal Translation: ${data.translated_text})`;
+                return `${data.original_text} (Literal Translation: ${data.literal_translation}, Contextual Translation: ${data.contextual_translation})`;
             } else {
                 console.error('Translation error:', response.statusText);
                 return 'Translation failed due to server error.';
@@ -57,7 +57,6 @@ document.addEventListener('DOMContentLoaded', () => {
             return 'Unable to reach the translation server. Please check your network or server settings.';
         }
     }
-    
 
     sendMessageButton.addEventListener('click', async () => {
         const messageText = messageInput.value.trim();
@@ -90,4 +89,3 @@ document.addEventListener('DOMContentLoaded', () => {
         displayMessages();
     }, 1000);
 });
-
