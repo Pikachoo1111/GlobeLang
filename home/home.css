@@ -6,7 +6,7 @@ body {
     height: 100vh;
     background-color: #2f3136;
     background-image: linear-gradient(
-        23deg,
+        180deg,
         hsl(210deg 100% 50%) 0%,  /* Medium Blue */
         hsl(200deg 80% 45%) 20%,  /* Steel Blue */
         hsl(190deg 81% 40%) 40%,  /* Light Slate Blue */
