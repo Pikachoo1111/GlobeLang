@@ -40,29 +40,42 @@ document.addEventListener('DOMContentLoaded', () => {
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
 
-    async function translateText(text) {
-        try {
-            const response = await fetch('https://libretranslate.de/translate', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    q: text,
-                    source: 'auto',  // Automatically detect the source language
-                    target: 'en'     // Translate to English
-                })
-            });
+    async function translateText(text, retries = 3) {
+        const endpoint = 'https://libretranslate.de/translate'; // Ensure this is the correct endpoint
 
-            if (!response.ok) {
-                throw new Error(`Network response was not ok: ${response.statusText}`);
+        for (let attempt = 0; attempt < retries; attempt++) {
+            try {
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        q: text,
+                        source: 'auto',  // Automatically detect the source language
+                        target: 'en'     // Translate to English
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Network response was not ok: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+
+                // Check if the translation result is valid
+                if (data && data.translatedText) {
+                    return data.translatedText;
+                } else {
+                    throw new Error('Invalid translation response');
+                }
+            } catch (error) {
+                console.error(`Attempt ${attempt + 1} failed: ${error.message}`);
+                // If it's the last attempt, return a fallback message
+                if (attempt === retries - 1) {
+                    return "Translation not available. Please try again later.";
+                }
             }
-
-            const data = await response.json();
-            return data.translatedText || "Translation failed.";
-        } catch (error) {
-            console.error('Error translating text:', error);
-            return "Translation not available. Please try again later.";
         }
     }
 
