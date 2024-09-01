@@ -13,10 +13,9 @@ body {
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-    width: 400px;
+    width: 500px;
     background-color: #40444b;
     text-align: center;
-    position: relative;
 }
 
 #messages {
@@ -27,15 +26,17 @@ body {
     margin-bottom: 10px;
     background-color: #2f3136;
     color: #dcddde;
+    text-align: left;
 }
 
-input[type="text"] {
+input[type="text"], select {
     width: calc(100% - 22px);
     padding: 10px;
     border: 1px solid #4f545c;
     border-radius: 5px;
     background-color: #40444b;
     color: #dcddde;
+    margin-bottom: 10px;
 }
 
 button {
@@ -52,3 +53,4 @@ button {
 button:hover {
     background-color: #4752c4;
 }
+
