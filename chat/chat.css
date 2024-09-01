@@ -2,7 +2,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    height: 130vh;
     background-color: #2f3136;
     color: #dcddde;
     font-family: Arial, sans-serif;
@@ -19,13 +19,15 @@ body {
 }
 
 #chat-container {
-    padding: 40px;
+    padding: 10px;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     width: 500px;
+    height: 690px;
     background-color: #40444b;
     text-align: center;
 }
+
 
 #messages {
     height: 300px;
