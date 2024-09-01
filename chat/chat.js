@@ -30,71 +30,62 @@ document.addEventListener('DOMContentLoaded', () => {
         messagesContainer.innerHTML = '';
         messages.forEach(msg => {
             const messageElement = document.createElement('div');
-            messageElement.innerHTML = `
-                <strong>${msg.user}:</strong>
-                <div>Original: ${msg.originalText}</div>
-                <div>Translation: ${msg.translatedText}</div>
-            `;
+            messageElement.textContent = `${msg.user}: ${msg.text}`;
             messagesContainer.appendChild(messageElement);
         });
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
 
-    async function translateText(text, retries = 3) {
-        const endpoint = 'https://libretranslate.de/translate'; // Ensure this is the correct endpoint
+    displayMessages();
 
-        for (let attempt = 0; attempt < retries; attempt++) {
-            try {
-                const response = await fetch(endpoint, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        q: text,
-                        source: 'auto',  // Automatically detect the source language
-                        target: 'en'     // Translate to English
-                    })
-                });
+    async function translateText(text, targetLang) {
+        try {
+            const response = await fetch('http://localhost:5000/translate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ text: text, target_lang: targetLang })
+            });
 
-                if (!response.ok) {
-                    throw new Error(`Network response was not ok: ${response.statusText}`);
-                }
-
+            if (response.ok) {
                 const data = await response.json();
-
-                // Check if the translation result is valid
-                if (data && data.translatedText) {
-                    return data.translatedText;
-                } else {
-                    throw new Error('Invalid translation response');
-                }
-            } catch (error) {
-                console.error(`Attempt ${attempt + 1} failed: ${error.message}`);
-                // If it's the last attempt, return a fallback message
-                if (attempt === retries - 1) {
-                    return "Translation not available. Please try again later.";
-                }
+                return data.translated_text; // Return the translated text
+            } else {
+                console.error('Translation error:', response.statusText);
+                return 'Translation error occurred.';
             }
+        } catch (error) {
+            console.error('Error communicating with the translation server:', error);
+            return 'Server communication error.';
         }
     }
 
     sendMessageButton.addEventListener('click', async () => {
         const messageText = messageInput.value.trim();
         const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+
         if (messageText && currentUser.username) {
-            const translatedText = await translateText(messageText);
             const newMessage = {
                 user: currentUser.username,
-                originalText: messageText,
-                translatedText: translatedText
+                text: messageText
             };
             messages.push(newMessage);
             localStorage.setItem(`messages_${roomId}`, JSON.stringify(messages));
             displayMessages();
-            messageInput.value = ''; // Clear input field after sending message
-        } else {
-            console.error('Message text or user information is missing.');
+            messageInput.value = '';
+
+            // Send message to translation server
+            const translatedText = await translateText(messageText, 'en'); // Example: translate to English
+            if (translatedText) {
+                const translatedMessage = {
+                    user: 'Translation',
+                    text: `${messageText} (Translated: ${translatedText})`
+                };
+                messages.push(translatedMessage);
+                localStorage.setItem(`messages_${roomId}`, JSON.stringify(messages));
+                displayMessages();
+            }
         }
     });
 
@@ -121,6 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
         window.location.href = '../home/home.html';
     });
 
-    // Load initial messages
-    displayMessages();
+    setInterval(() => {
+        displayMessages();
+    }, 1000);
 });
