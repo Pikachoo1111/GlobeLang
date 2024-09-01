@@ -36,29 +36,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     displayMessages();
 
-    async function translateText(text, targetLang) {
-        try {
-            const response = await fetch('http://127.0.0.1:5001/translate', { // Ensure port matches
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ text: text, target_lang: targetLang })
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                return `${data.original_text} (Literal Translation: ${data.literal_translation}, Contextual Translation: ${data.contextual_translation})`;
-            } else {
-                console.error('Translation error:', response.statusText);
-                return 'Translation failed due to server error.';
-            }
-        } catch (error) {
-            console.error('Error communicating with the translation server:', error);
-            return 'Unable to reach the translation server. Please check your network or server settings.';
-        }
-    }
-
     sendMessageButton.addEventListener('click', async () => {
         const messageText = messageInput.value.trim();
         const targetLang = languageSelect.value;  // Get selected language
@@ -78,7 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (translation) {
                 const translatedMessage = {
                     user: 'Translation',
-                    text: translation
+                    text: `${translation.original_text} (Literal Translation: ${translation.literal_translation}, Contextual Translation: ${translation.contextual_translation})`
                 };
                 messages.push(translatedMessage);
                 localStorage.setItem(`messages_${roomId}`, JSON.stringify(messages));
@@ -91,3 +68,4 @@ document.addEventListener('DOMContentLoaded', () => {
         displayMessages();
     }, 1000);
 });
+

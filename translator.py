@@ -19,16 +19,17 @@ def translate():
     try:
         # Translate the text to the target language
         translation = translator.translate(text, dest=target_lang)
+        
+        # Construct the response with the requested format
+        response = {
+            (f"Original Text: {translation['original_text']}")
+            (f"Literal Translation: {translation['literal_translation']}")
+            (f"Contextual Translation: {translation['contextual_translation']}")   # Contextual translation is typically the same as literal for basic usage
+        }
 
-        return jsonify({
-            'original_text': text,
-            'literal_translation': translation.text,
-            'contextual_translation': translation.text  # Adjust as needed if contextual translation differs
-        })
+        return jsonify(response)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5001)  # Ensure the port is correct
-
-
+    app.run(debug=True, port=5001)  # Ensure the port is correct and not in use
